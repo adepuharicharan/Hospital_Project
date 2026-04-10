@@ -18,7 +18,7 @@ namespace HospitalEHR.Controllers
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
-            string role = "Adminn";
+            string role = "Super-Adminn";
             if (HttpContext.Session.IsAuthenticated()) return RedirectToDashboard();
             ViewBag.ReturnUrl = returnUrl;
             return View(new LoginVM());
