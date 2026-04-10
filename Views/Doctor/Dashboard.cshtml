@@ -1,0 +1,26 @@
+@model List<Patient>
+@{ ViewData["Title"] = "Doctor Dashboard"; }
+<div class="page-header"><div class="ph-left"><h1 class="ph-title">My Dashboard</h1><p class="ph-sub">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</p></div></div>
+<div class="stats-row">
+  <div class="stat-card sc-blue"><div class="sc-icon"><i class="fas fa-procedures"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.TotalPatients</div><div class="sc-lbl">My Patients</div></div></div>
+  <div class="stat-card sc-green"><div class="sc-icon"><i class="fas fa-bed"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Admitted</div><div class="sc-lbl">Admitted</div></div></div>
+  <div class="stat-card sc-teal"><div class="sc-icon"><i class="fas fa-clipboard-list"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Registered</div><div class="sc-lbl">Registered</div></div></div>
+</div>
+<div class="card mb3"><div class="card-body"><form method="get" class="search-bar">
+  <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search patients…" style="width:280px"/></div>
+  <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  @if(!string.IsNullOrEmpty(ViewBag.Search as string)){<a asp-action="Dashboard" class="btn btn-outline btn-sm">Clear</a>}
+</form></div></div>
+<div class="card"><div class="card-hdr"><i class="fas fa-procedures"></i> My Patients</div>
+<div class="table-wrap"><table class="dtable">
+  <thead><tr><th>ID</th><th>Name</th><th>Age/Gender</th><th>Status</th><th>Chief Complaint</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var p in Model){<tr>
+    <td class="tid">#@p.PatientId</td><td class="fw6">@p.FullName</td><td>@p.Age yr / @p.Gender</td>
+    <td>@if(p.AdmissionStatus==AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else if(p.AdmissionStatus==AdmissionStatus.Discharged){<span class="badge b-discharged">Discharged</span>}else{<span class="badge b-registered">Registered</span>}</td>
+    <td class="tsm">@(p.ChiefComplaint??"—")</td>
+    <td><a asp-action="PatientDetails" asp-route-id="@p.PatientId" class="btn btn-sm btn-primary">View Details</a></td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-procedures"></i><p>No patients assigned.</p></div>}
+</div></div>

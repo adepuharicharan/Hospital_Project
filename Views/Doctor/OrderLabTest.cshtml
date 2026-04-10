@@ -1,0 +1,15 @@
+@model LabOrderCreateVM
+@{ ViewData["Title"] = "Order Lab Test"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><a asp-action="PatientDetails" asp-route-id="@Model.PatientId">@Model.PatientName</a><i class="fas fa-chevron-right"></i><span>Lab Test</span></div><h1 class="ph-title">Order Lab Test</h1></div></div>
+<div class="form-wrap"><div class="card"><div class="card-hdr"><i class="fas fa-flask"></i> Lab Order — @Model.PatientName</div><div class="card-body">
+  <form asp-action="OrderLabTest" method="post">@Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PatientId"/><input type="hidden" asp-for="PatientName"/>
+    <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+    <div class="form-grid">
+      <div class="fg col-span-2"><label class="fl">Test Name <span class="req">*</span></label><input asp-for="TestName" class="fi" placeholder="e.g. Complete Blood Count"/><span asp-validation-for="TestName" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Instructions for Lab</label><textarea asp-for="DoctorInstructions" class="fi ta" rows="3" placeholder="Special instructions for the lab technician"></textarea></div>
+    </div>
+    <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Order Test</button><a asp-action="PatientDetails" asp-route-id="@Model.PatientId" class="btn btn-outline">Cancel</a></div>
+  </form>
+</div></div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

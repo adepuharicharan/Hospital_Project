@@ -1,0 +1,17 @@
+@model PrescriptionCreateVM
+@{ ViewData["Title"] = "Prescribe Medicine"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><a asp-action="PatientDetails" asp-route-id="@Model.PatientId">@Model.PatientName</a><i class="fas fa-chevron-right"></i><span>Prescribe</span></div><h1 class="ph-title">Prescribe Medicine</h1></div></div>
+<div class="form-wrap"><div class="card"><div class="card-hdr"><i class="fas fa-pills"></i> Prescription — @Model.PatientName</div><div class="card-body">
+  <form asp-action="PrescribeMedicine" method="post">@Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PatientId"/><input type="hidden" asp-for="PatientName"/>
+    <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+    <div class="form-grid">
+      <div class="fg col-span-2"><label class="fl">Medicine Name <span class="req">*</span></label><input asp-for="MedicineName" class="fi" placeholder="e.g. Amoxicillin 500mg"/><span asp-validation-for="MedicineName" class="ferr"></span></div>
+      <div class="fg"><label class="fl">Dosage <span class="req">*</span></label><input asp-for="Dosage" class="fi" placeholder="e.g. 1 tablet twice daily"/><span asp-validation-for="Dosage" class="ferr"></span></div>
+      <div class="fg"><label class="fl">Duration <span class="req">*</span></label><input asp-for="Duration" class="fi" placeholder="e.g. 7 days"/><span asp-validation-for="Duration" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Instructions</label><textarea asp-for="Instructions" class="fi ta" rows="2" placeholder="e.g. Take after meals"></textarea></div>
+    </div>
+    <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Prescription</button><a asp-action="PatientDetails" asp-route-id="@Model.PatientId" class="btn btn-outline">Cancel</a></div>
+  </form>
+</div></div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

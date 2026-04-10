@@ -1,0 +1,49 @@
+@model Patient
+@{ ViewData["Title"] = "Generate Bill";
+   var bill = ViewBag.Bill as BillingRecord;
+   var labs = ViewBag.LabOrders as List<LabOrder> ?? new();
+   var rxs  = ViewBag.Prescriptions as List<Prescription> ?? new();
+   var txs  = ViewBag.Treatments as List<TreatmentPlan> ?? new();
+}
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="PatientList">Patients</a><i class="fas fa-chevron-right"></i><span>Bill</span></div><h1 class="ph-title">Bill — @Model.FullName</h1></div>
+  @if(bill != null){<a asp-action="Invoice" asp-route-billId="@bill.BillId" class="btn btn-outline" target="_blank"><i class="fas fa-print"></i> Print Invoice</a>}
+</div>
+<div class="grid-2">
+  <div class="card"><div class="card-hdr"><i class="fas fa-user"></i> Patient Info</div><div class="card-body">
+    <div class="kv-row"><span>Patient ID</span><strong>#@Model.PatientId</strong></div>
+    <div class="kv-row"><span>Name</span><strong>@Model.FullName</strong></div>
+    <div class="kv-row"><span>Doctor</span><strong>@(Model.AssignedDoctor?.FullName??"—")</strong></div>
+    <div class="kv-row"><span>Status</span><strong>@Model.AdmissionStatus</strong></div>
+    <div class="kv-row"><span>Admitted</span><strong>@(Model.AdmissionDate?.ToString("dd MMM yyyy")??"—")</strong></div>
+  </div></div>
+  @if(bill != null){
+  <div class="card"><div class="card-hdr"><i class="fas fa-file-invoice-dollar"></i> Bill Summary</div><div class="card-body">
+    <div class="kv-row"><span>Registration Fee</span><strong>&#x20b9;@bill.RegistrationFee.ToString("N2")</strong></div>
+    <div class="kv-row"><span>Consultation Fee</span><strong>&#x20b9;@bill.ConsultationFee.ToString("N2")</strong></div>
+    <div class="kv-row"><span>Lab Fee</span><strong>&#x20b9;@bill.LabFee.ToString("N2")</strong></div>
+    <div class="kv-row"><span>Medicine Fee</span><strong>&#x20b9;@bill.MedicineFee.ToString("N2")</strong></div>
+    <div class="kv-row total-row"><span>Total Amount</span><strong class="total-val">&#x20b9;@bill.TotalAmount.ToString("N2")</strong></div>
+    <div class="kv-row"><span>Status</span><strong>@if(bill.PaymentStatus==PaymentStatus.Paid){<span class="badge b-active">PAID</span>}else{<span class="badge b-registered">PENDING</span>}</strong></div>
+    @if(bill.PaymentStatus==PaymentStatus.Pending){
+    <div style="margin-top:16px">
+      <form asp-controller="BillingOfficer" asp-action="ProcessPayment" method="post">@Html.AntiForgeryToken()
+        <input type="hidden" name="billId" value="@bill.BillId"/>
+        <div class="fg"><label class="fl">Payment Method</label>
+          <select name="paymentMethod" class="fi"><option value="">— Select —</option><option>Cash</option><option>Card</option><option>UPI</option><option>Insurance</option></select>
+        </div>
+        <button type="submit" class="btn btn-primary mt1" style="width:100%"><i class="fas fa-check"></i> Process Payment</button>
+      </form>
+    </div>}
+  </div></div>}
+</div>
+@if(labs.Any()){
+<div class="card mt2"><div class="card-hdr"><i class="fas fa-flask"></i> Lab Tests</div>
+<div class="table-wrap"><table class="dtable"><thead><tr><th>Test Name</th><th>Status</th><th>Doctor</th><th>Cost</th></tr></thead><tbody>
+@foreach(var l in labs){<tr><td>@l.TestName</td><td>@if(l.Status==TestStatus.Completed){<span class="badge b-active">Done</span>}else{<span class="badge b-registered">@l.Status</span>}</td><td class="tsm">@(l.OrderedByDoctor?.FullName??"—")</td><td>&#x20b9;@l.TestCost.ToString("N2")</td></tr>}
+</tbody></table></div></div>}
+@if(rxs.Any()){
+<div class="card mt2"><div class="card-hdr"><i class="fas fa-pills"></i> Prescriptions</div>
+<div class="table-wrap"><table class="dtable"><thead><tr><th>Medicine</th><th>Dosage</th><th>Status</th><th>Cost</th></tr></thead><tbody>
+@foreach(var r in rxs){<tr><td>@r.MedicineName</td><td class="tsm">@r.Dosage</td><td>@if(r.Status==PrescriptionStatus.Dispensed){<span class="badge b-active">Dispensed</span>}else{<span class="badge b-registered">Prescribed</span>}</td><td>&#x20b9;@r.MedicineCost.ToString("N2")</td></tr>}
+</tbody></table></div></div>}

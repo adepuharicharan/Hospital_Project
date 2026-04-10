@@ -1,0 +1,20 @@
+@model List<LabOrder>
+@{ ViewData["Title"] = "All Lab Orders"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><span>Lab</span><i class="fas fa-chevron-right"></i><span>All Orders</span></div><h1 class="ph-title">All Lab Orders</h1></div></div>
+<div class="card mb3"><div class="card-body"><form method="get" class="search-bar">
+  <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search patient or test…" style="width:280px"/></div>
+  <button type="submit" class="btn btn-primary btn-sm">Search</button>
+</form></div></div>
+<div class="card"><div class="table-wrap"><table class="dtable">
+  <thead><tr><th>ID</th><th>Patient</th><th>Test</th><th>Status</th><th>Result</th><th>Cost</th><th>Ordered</th><th>Action</th></tr></thead>
+  <tbody>
+  @foreach(var o in Model){<tr>
+    <td class="tid">#@o.LabOrderId</td><td class="fw6">@(o.Patient?.FullName??"—")</td><td>@o.TestName</td>
+    <td>@if(o.Status==TestStatus.Completed){<span class="badge b-active">Completed</span>}else if(o.Status==TestStatus.InProgress){<span class="badge b-admitted">In Progress</span>}else{<span class="badge b-registered">Ordered</span>}</td>
+    <td class="tsm">@(o.Result??"—")</td><td>&#x20b9;@o.TestCost.ToString("N0")</td>
+    <td class="tsm tm">@o.OrderedAt.ToString("dd MMM")</td>
+    <td>@if(o.Status!=TestStatus.Completed){<a asp-action="UpdateResult" asp-route-id="@o.LabOrderId" class="btn btn-sm btn-primary">Update</a>}</td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-flask"></i><p>No orders found.</p></div>}
+</div></div>

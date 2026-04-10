@@ -1,0 +1,46 @@
+@model List<AppUser>
+@{ ViewData["Title"] = "Manage Users"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><span>Admin</span><i class="fas fa-chevron-right"></i><span>Users</span></div><h1 class="ph-title">Manage Users</h1></div>
+  <a asp-action="CreateUser" class="btn btn-primary"><i class="fas fa-user-plus"></i> Add User</a>
+</div>
+<div class="card mb3">
+  <div class="card-body">
+    <form method="get" class="search-bar">
+      <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search name or email…" style="width:260px"/></div>
+      <select name="roleFilter" class="fi" style="width:160px">
+        <option value="">All Roles</option>
+        @* @foreach(var r in ViewBag.AllRoles as string[]){<option value="@r" @(ViewBag.RoleFilter==r?"selected":"")>@r</option>} *@
+                @foreach (var r in ViewBag.AllRoles as string[])
+                {
+                    bool isSelected = ViewBag.RoleFilter == r;
+    
+                    <option value="@r" selected="@isSelected">
+                        @r
+                    </option>
+                }
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      @if(!string.IsNullOrEmpty(ViewBag.Search as string)||!string.IsNullOrEmpty(ViewBag.RoleFilter as string)){<a asp-action="Users" class="btn btn-outline btn-sm">Clear</a>}
+    </form>
+  </div>
+</div>
+<div class="card"><div class="table-wrap"><table class="dtable">
+  <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Specialization</th><th>Employee ID</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var u in Model){<tr>
+    <td><div class="user-cell"><div class="avatar sm">@string.Concat(u.FullName.Split(' ').Take(2).Select(w=>w[0])).ToUpper()</div><span class="fw6">@u.FullName</span></div></td>
+    <td class="tsm tm">@u.Email</td>
+    <td><span class="badge b-role">@u.Role</span></td>
+    <td class="tsm">@(u.Specialization??"—")</td>
+    <td class="tsm">@(u.EmployeeId??"—")</td>
+    <td>@if(u.IsActive){<span class="badge b-active">Active</span>}else{<span class="badge b-inactive">Inactive</span>}</td>
+    <td class="tsm tm">@(u.LastLoginAt?.ToString("dd MMM yy HH:mm")??"Never")</td>
+    <td><form asp-action="ToggleUserStatus" method="post" style="display:inline">@Html.AntiForgeryToken()
+      <input type="hidden" name="userId" value="@u.UserId"/>
+      <button type="submit" class="btn btn-sm @(u.IsActive?"btn-danger":"btn-success")">@(u.IsActive?"Deactivate":"Activate")</button>
+    </form></td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-users"></i><p>No users found.</p></div>}
+</div></div>

@@ -1,0 +1,23 @@
+@model List<Patient>
+@{ ViewData["Title"] = "All Patients"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><span>Admin</span><i class="fas fa-chevron-right"></i><span>Patients</span></div><h1 class="ph-title">All Patients</h1></div>
+</div>
+<div class="card mb3"><div class="card-body"><form method="get" class="search-bar">
+  <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search ID, name or contact…" style="width:260px"/></div>
+  <select name="status" class="fi" style="width:150px"><option value="">All Statuses</option><option value="Registered">Registered</option><option value="Admitted">Admitted</option><option value="Discharged">Discharged</option></select>
+  <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+  @if(!string.IsNullOrEmpty(ViewBag.Search as string)){<a asp-action="AllPatients" class="btn btn-outline btn-sm">Clear</a>}
+</form></div></div>
+<div class="card"><div class="table-wrap"><table class="dtable">
+  <thead><tr><th>ID</th><th>Name</th><th>Age/Gender</th><th>Contact</th><th>Doctor</th><th>Status</th><th>Registered</th></tr></thead>
+  <tbody>
+  @foreach(var p in Model){<tr>
+    <td class="tid">#@p.PatientId</td><td class="fw6">@p.FullName</td><td>@p.Age yr / @p.Gender</td>
+    <td>@p.ContactNumber</td><td class="tsm">@(p.AssignedDoctor?.FullName??"—")</td>
+    <td>@if(p.AdmissionStatus==AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else if(p.AdmissionStatus==AdmissionStatus.Discharged){<span class="badge b-discharged">Discharged</span>}else{<span class="badge b-registered">Registered</span>}</td>
+    <td class="tsm tm">@p.RegistrationDate.ToString("dd MMM yyyy")</td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-search"></i><p>No patients found.</p></div>}
+</div></div>

@@ -1,0 +1,49 @@
+@model Patient
+@{ ViewData["Title"] = "Patient Details";
+   var ehrs = ViewBag.EhrRecords as List<EhrRecord> ?? new();
+   var labs = ViewBag.LabOrders as List<LabOrder> ?? new();
+   var rxs  = ViewBag.Prescriptions as List<Prescription> ?? new();
+   var txs  = ViewBag.Treatments as List<TreatmentPlan> ?? new();
+}
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="MyPatients">My Patients</a><i class="fas fa-chevron-right"></i><span>#@Model.PatientId</span></div><h1 class="ph-title">@Model.FullName</h1></div>
+  <div class="btn-row">
+    <a asp-action="CreateEhr" asp-route-patientId="@Model.PatientId" class="btn btn-primary btn-sm"><i class="fas fa-file-medical"></i> Add EHR</a>
+    <a asp-action="AddTreatment" asp-route-patientId="@Model.PatientId" class="btn btn-outline btn-sm"><i class="fas fa-stethoscope"></i> Treatment</a>
+    <a asp-action="OrderLabTest" asp-route-patientId="@Model.PatientId" class="btn btn-outline btn-sm"><i class="fas fa-flask"></i> Lab Test</a>
+    <a asp-action="PrescribeMedicine" asp-route-patientId="@Model.PatientId" class="btn btn-outline btn-sm"><i class="fas fa-pills"></i> Prescribe</a>
+  </div>
+</div>
+<div class="grid-2 mb3">
+  <div class="card"><div class="card-hdr"><i class="fas fa-user"></i> Patient Info</div><div class="card-body">
+    <div class="kv-row"><span>Age / Gender</span><strong>@Model.Age yr / @Model.Gender</strong></div>
+    <div class="kv-row"><span>Blood Group</span><strong>@Model.BloodGroup</strong></div>
+    <div class="kv-row"><span>Contact</span><strong>@Model.ContactNumber</strong></div>
+    <div class="kv-row"><span>Allergies</span><strong>@(Model.KnownAllergies??"None")</strong></div>
+    <div class="kv-row"><span>Chief Complaint</span><strong>@(Model.ChiefComplaint??"—")</strong></div>
+    <div class="kv-row"><span>Status</span><strong>@if(Model.AdmissionStatus==AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else{<span class="badge b-registered">@Model.AdmissionStatus</span>}</strong></div>
+  </div></div>
+</div>
+<div class="tabs-wrap">
+  <div class="tabs"><button class="tab active" data-tab="ehr">EHR Records (@ehrs.Count)</button><button class="tab" data-tab="lab">Lab Orders (@labs.Count)</button><button class="tab" data-tab="rx">Prescriptions (@rxs.Count)</button><button class="tab" data-tab="tx">Treatments (@txs.Count)</button></div>
+  <div class="tab-panel active" id="tab-ehr">
+    @if(ehrs.Any()){<div class="table-wrap"><table class="dtable"><thead><tr><th>Date</th><th>Chief Complaint</th><th>Diagnosis</th><th>Doctor</th></tr></thead><tbody>
+    @foreach(var e in ehrs){<tr><td class="tsm tm">@e.VisitDate.ToString("dd MMM yyyy")</td><td class="fw6">@e.ChiefComplaint</td><td>@e.Diagnosis</td><td class="tsm">@(e.Doctor?.FullName??"—")</td></tr>}
+    </tbody></table></div>}else{<div class="empty-state"><i class="fas fa-file-medical"></i><p>No EHR records yet.</p></div>}
+  </div>
+  <div class="tab-panel" id="tab-lab">
+    @if(labs.Any()){<div class="table-wrap"><table class="dtable"><thead><tr><th>Test</th><th>Status</th><th>Result</th><th>Cost</th><th>Ordered</th></tr></thead><tbody>
+    @foreach(var l in labs){<tr><td class="fw6">@l.TestName</td><td>@if(l.Status==TestStatus.Completed){<span class="badge b-active">Completed</span>}else if(l.Status==TestStatus.InProgress){<span class="badge b-admitted">In Progress</span>}else{<span class="badge b-registered">Ordered</span>}</td><td class="tsm">@(l.Result??"Pending")</td><td>&#x20b9;@l.TestCost.ToString("N0")</td><td class="tsm tm">@l.OrderedAt.ToString("dd MMM")</td></tr>}
+    </tbody></table></div>}else{<div class="empty-state"><i class="fas fa-flask"></i><p>No lab orders.</p></div>}
+  </div>
+  <div class="tab-panel" id="tab-rx">
+    @if(rxs.Any()){<div class="table-wrap"><table class="dtable"><thead><tr><th>Medicine</th><th>Dosage</th><th>Duration</th><th>Status</th><th>Cost</th></tr></thead><tbody>
+    @foreach(var r in rxs){<tr><td class="fw6">@r.MedicineName</td><td>@r.Dosage</td><td>@r.Duration</td><td>@if(r.Status==PrescriptionStatus.Dispensed){<span class="badge b-active">Dispensed</span>}else{<span class="badge b-registered">Prescribed</span>}</td><td>&#x20b9;@r.MedicineCost.ToString("N0")</td></tr>}
+    </tbody></table></div>}else{<div class="empty-state"><i class="fas fa-pills"></i><p>No prescriptions.</p></div>}
+  </div>
+  <div class="tab-panel" id="tab-tx">
+    @if(txs.Any()){<div class="table-wrap"><table class="dtable"><thead><tr><th>Date</th><th>Treatment</th><th>Instructions</th><th>Doctor</th></tr></thead><tbody>
+    @foreach(var t in txs){<tr><td class="tsm tm">@t.TreatmentDate.ToString("dd MMM")</td><td class="fw6">@t.TreatmentDescription</td><td class="tsm">@(t.Instructions??"—")</td><td class="tsm">@(t.Doctor?.FullName??"—")</td></tr>}
+    </tbody></table></div>}else{<div class="empty-state"><i class="fas fa-stethoscope"></i><p>No treatment plans.</p></div>}
+  </div>
+</div>

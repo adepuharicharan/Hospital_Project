@@ -1,0 +1,48 @@
+@model Patient
+@{ ViewData["Title"] = "Edit Patient"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="PatientList">Patients</a><i class="fas fa-chevron-right"></i><span>Edit</span></div><h1 class="ph-title">Edit Patient</h1></div>
+</div>
+<div class="form-wrap"><div class="card">
+  <div class="card-hdr"><i class="fas fa-edit"></i> Edit Patient #@Model.PatientId</div>
+  <div class="card-body">
+    <form asp-action="EditPatient" method="post">@Html.AntiForgeryToken()
+      <input type="hidden" asp-for="PatientId"/>
+      <input type="hidden" asp-for="RegistrationDate"/>
+      <input type="hidden" asp-for="AdmissionStatus"/>
+      <input type="hidden" asp-for="AdmissionDate"/>
+      <input type="hidden" asp-for="DischargeDate"/>
+      <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Full Name<span class="req">*</span></label><input asp-for="FullName" class="fi"/><span asp-validation-for="FullName" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Date of Birth<span class="req">*</span></label><input asp-for="DateOfBirth" type="date" class="fi"/></div>
+        <div class="fg"><label class="fl">Gender</label><select asp-for="Gender" class="fi">@foreach(var g in Enum.GetValues<Gender>()){<option value="@g">@g</option>}</select></div>
+        <div class="fg"><label class="fl">Blood Group</label><select asp-for="BloodGroup" class="fi">@foreach(var b in Enum.GetValues<BloodGroup>()){<option value="@b">@b</option>}</select></div>
+        <div class="fg"><label class="fl">Contact Number</label><input asp-for="ContactNumber" class="fi"/><span asp-validation-for="ContactNumber" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Email</label><input asp-for="Email" class="fi"/></div>
+        <div class="fg col-span-2"><label class="fl">Address</label><input asp-for="Address" class="fi"/></div>
+        <div class="fg"><label class="fl">City</label><input asp-for="City" class="fi"/></div>
+        <div class="fg"><label class="fl">Allergies</label><input asp-for="KnownAllergies" class="fi"/></div>
+        <div class="fg"><label class="fl">Assign Doctor</label>
+          <select asp-for="AssignedDoctorId" class="fi"><option value="">— None —</option>
+          @* @foreach(var d in ViewBag.Doctors as List<AppUser>){<option value="@d.UserId" @(d.UserId==Model.AssignedDoctorId?"selected":"")>@d.FullName @(d.Specialization!=null?" — "+d.Specialization:"")</option>}</select></div> *@
+                    @foreach (var d in ViewBag.Doctors as List<AppUser>)
+                    {
+                        bool isSelected = d.UserId == Model.AssignedDoctorId;
+    
+                        <option value="@d.UserId" selected="@isSelected">
+                            @d.FullName @(d.Specialization != null ? " — " + d.Specialization : "")
+                        </option>
+                    }
+                </select>
+            </div>
+        <div class="fg"><label class="fl">Ward/Room</label><input asp-for="WardRoom" class="fi"/></div>
+        <div class="fg"><label class="fl">Emergency Contact Name</label><input asp-for="EmergencyContactName" class="fi"/></div>
+        <div class="fg"><label class="fl">Emergency Contact No.</label><input asp-for="EmergencyContactNumber" class="fi"/></div>
+        <div class="fg col-span-2"><label class="fl">Chief Complaint</label><input asp-for="ChiefComplaint" class="fi"/></div>
+      </div>
+      <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button><a asp-action="PatientDetails" asp-route-id="@Model.PatientId" class="btn btn-outline">Cancel</a></div>
+    </form>
+  </div>
+</div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

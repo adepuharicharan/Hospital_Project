@@ -1,0 +1,26 @@
+@model List<Patient>
+@{ ViewData["Title"] = "Patient Bills"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><span>Billing</span><i class="fas fa-chevron-right"></i><span>Patients</span></div><h1 class="ph-title">Patient Billing</h1></div></div>
+<div class="card mb3"><div class="card-body"><form method="get" class="search-bar">
+  <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search patients…" style="width:280px"/></div>
+  <button type="submit" class="btn btn-primary btn-sm">Search</button>
+</form></div></div>
+<div class="card"><div class="table-wrap"><table class="dtable">
+  <thead><tr><th>ID</th><th>Name</th><th>Doctor</th><th>Status</th><th>Reg. Fee</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var p in Model){<tr>
+    <td class="tid">#@p.PatientId</td><td class="fw6">@p.FullName</td>
+    <td class="tsm">@(p.AssignedDoctor?.FullName??"—")</td>
+    <td>@if(p.AdmissionStatus==AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else{<span class="badge b-registered">Registered</span>}</td>
+    <td>&#x20b9;@p.RegistrationFee.ToString("N0")</td>
+    <td class="btn-row">
+      <a asp-action="GenerateBill" asp-route-patientId="@p.PatientId" class="btn btn-sm btn-primary"><i class="fas fa-file-invoice"></i> Generate Bill</a>
+      <form asp-action="DischargePatient" method="post" style="display:inline">@Html.AntiForgeryToken()
+        <input type="hidden" name="patientId" value="@p.PatientId"/>
+        <button type="submit" class="btn btn-sm btn-outline">Discharge</button>
+      </form>
+    </td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-procedures"></i><p>No patients.</p></div>}
+</div></div>

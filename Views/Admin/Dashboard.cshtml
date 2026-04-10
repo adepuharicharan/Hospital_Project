@@ -1,0 +1,39 @@
+@model AdminDashVM
+@{ ViewData["Title"] = "Admin Dashboard"; }
+<div class="page-header">
+  <div class="ph-left"><h1 class="ph-title">Admin Dashboard</h1><p class="ph-sub">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</p></div>
+</div>
+<div class="stats-row">
+  <div class="stat-card sc-blue"><div class="sc-icon"><i class="fas fa-procedures"></i></div><div class="sc-info"><div class="sc-val">@Model.TotalPatients</div><div class="sc-lbl">Total Patients</div></div></div>
+  <div class="stat-card sc-green"><div class="sc-icon"><i class="fas fa-bed"></i></div><div class="sc-info"><div class="sc-val">@Model.AdmittedCount</div><div class="sc-lbl">Admitted</div></div></div>
+  <div class="stat-card sc-purple"><div class="sc-icon"><i class="fas fa-user-md"></i></div><div class="sc-info"><div class="sc-val">@Model.TotalDoctors</div><div class="sc-lbl">Doctors</div></div></div>
+  <div class="stat-card sc-teal"><div class="sc-icon"><i class="fas fa-users"></i></div><div class="sc-info"><div class="sc-val">@Model.TotalUsers</div><div class="sc-lbl">Staff Users</div></div></div>
+  <div class="stat-card sc-gold"><div class="sc-icon"><i class="fas fa-rupee-sign"></i></div><div class="sc-info"><div class="sc-val">&#x20b9;@Model.TotalRevenue.ToString("N0")</div><div class="sc-lbl">Revenue</div></div></div>
+  <div class="stat-card sc-red"><div class="sc-icon"><i class="fas fa-flask"></i></div><div class="sc-info"><div class="sc-val">@Model.PendingLabOrders</div><div class="sc-lbl">Pending Labs</div></div></div>
+  <div class="stat-card sc-orange"><div class="sc-icon"><i class="fas fa-pills"></i></div><div class="sc-info"><div class="sc-val">@Model.PendingPrescriptions</div><div class="sc-lbl">Pending Rx</div></div></div>
+  <div class="stat-card sc-pink"><div class="sc-icon"><i class="fas fa-file-invoice"></i></div><div class="sc-info"><div class="sc-val">@Model.PendingBills</div><div class="sc-lbl">Pending Bills</div></div></div>
+</div>
+<div class="grid-2-1">
+  <div class="card">
+    <div class="card-hdr"><i class="fas fa-clock"></i> Recent Patients <a asp-action="AllPatients" class="btn btn-sm btn-outline ml-auto">View All</a></div>
+    <div class="table-wrap"><table class="dtable">
+      <thead><tr><th>ID</th><th>Name</th><th>Doctor</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+      @foreach(var p in Model.RecentPatients) {
+        <tr><td class="tid">#@p.PatientId</td><td class="fw6">@p.FullName</td><td class="tsm">@(p.AssignedDoctor?.FullName??"—")</td>
+          <td>@if(p.AdmissionStatus==HospitalEHR.Models.AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else if(p.AdmissionStatus==HospitalEHR.Models.AdmissionStatus.Discharged){<span class="badge b-discharged">Discharged</span>}else{<span class="badge b-registered">Registered</span>}</td>
+          <td class="tsm tm">@p.RegistrationDate.ToString("dd MMM yyyy")</td></tr>
+      }
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><i class="fas fa-bolt"></i> Quick Actions</div>
+    <div class="card-body qa-list">
+      <a asp-controller="Admin" asp-action="CreateUser"   class="qa-item"><i class="fas fa-user-plus"></i> Add New User</a>
+      <a asp-controller="Admin" asp-action="Users"        class="qa-item"><i class="fas fa-users"></i> Manage Users</a>
+      <a asp-controller="Admin" asp-action="AllPatients"  class="qa-item"><i class="fas fa-procedures"></i> All Patients</a>
+      <a asp-controller="Admin" asp-action="Reports"      class="qa-item"><i class="fas fa-chart-bar"></i> View Reports</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,197 @@
+@model BillingRecord
+@{
+    Layout = null;
+    ViewData["Title"] = "Invoice #" + Model.BillId;
+    var labs = ViewBag.LabOrders as List<LabOrder> ?? new();
+    var rxs  = ViewBag.Prescriptions as List<Prescription> ?? new();
+    var txs  = ViewBag.Treatments as List<TreatmentPlan> ?? new();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Invoice #@Model.BillId — @(Model.Patient?.FullName)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#1e293b;background:#f8fafc}
+.invoice-page{max-width:800px;margin:0 auto;background:#fff;padding:0}
+/* Print button */
+.print-bar{background:#1e3a5f;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.print-bar h3{font-size:1rem;font-weight:600}
+.print-bar button{background:#2563eb;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:.875rem;font-weight:600}
+.print-bar button:hover{background:#1d4ed8}
+/* Invoice content */
+.inv{padding:40px}
+/* Header */
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:24px;border-bottom:3px solid #1e3a5f}
+.hospital-brand{display:flex;align-items:center;gap:14px}
+.brand-icon{width:52px;height:52px;background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem}
+.brand-name{font-size:1.5rem;font-weight:800;color:#1e3a5f}
+.brand-sub{font-size:.8rem;color:#64748b;margin-top:2px}
+.inv-meta{text-align:right}
+.inv-title{font-size:1.8rem;font-weight:800;color:#2563eb;letter-spacing:-0.5px}
+.inv-num{font-size:.85rem;color:#64748b;margin-top:4px}
+.inv-date{font-size:.85rem;color:#64748b}
+/* Status badge */
+.status-paid{display:inline-block;background:#dcfce7;color:#166534;padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:700;margin-top:6px;border:1px solid #86efac}
+.status-pending{display:inline-block;background:#fef9c3;color:#854d0e;padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:700;margin-top:6px;border:1px solid #fde047}
+/* Patient & billing info */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+.info-box{background:#f8fafc;border-radius:10px;padding:18px;border:1px solid #e2e8f0}
+.info-box h4{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:12px}
+.info-row{display:flex;justify-content:space-between;margin-bottom:7px;font-size:.85rem}
+.info-row .il{color:#64748b}
+.info-row .iv{font-weight:600;color:#1e293b;text-align:right}
+/* Items table */
+.items-title{font-size:.95rem;font-weight:700;color:#1e3a5f;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.items-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.items-table th{background:#1e3a5f;color:#fff;padding:10px 12px;text-align:left;font-size:.8rem;font-weight:600}
+.items-table td{padding:9px 12px;border-bottom:1px solid #e2e8f0;font-size:.85rem}
+.items-table tr:nth-child(even) td{background:#f8fafc}
+.items-table .ta-right{text-align:right}
+/* Summary */
+.bill-summary{background:#f8fafc;border-radius:10px;padding:20px;border:1px solid #e2e8f0;margin-left:auto;width:320px}
+.sum-row{display:flex;justify-content:space-between;padding:7px 0;font-size:.9rem;color:#64748b}
+.sum-divider{border-top:2px solid #e2e8f0;margin:8px 0}
+.sum-total{display:flex;justify-content:space-between;padding:10px 0;font-size:1.15rem;font-weight:800;color:#1e3a5f}
+/* Footer */
+.inv-footer{margin-top:36px;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+.footer-note{font-size:.78rem;color:#94a3b8}
+.footer-sig{text-align:right}
+.sig-line{border-top:1px solid #94a3b8;width:160px;margin-left:auto;margin-bottom:4px}
+.sig-label{font-size:.75rem;color:#94a3b8}
+/* Print */
+@@media print{
+  .print-bar{display:none!important}
+  body{background:#fff}
+  .invoice-page{max-width:100%;margin:0;box-shadow:none}
+  .inv{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="invoice-page">
+  <div class="print-bar">
+    <h3>&#x1F4CB; Invoice #@Model.BillId — @(Model.Patient?.FullName)</h3>
+    <button onclick="window.print()">&#x1F5A8; Print / Save as PDF</button>
+  </div>
+  <div class="inv">
+    <div class="inv-header">
+      <div class="hospital-brand">
+        <div class="brand-icon">&#x2695;</div>
+        <div>
+          <div class="brand-name">City General Hospital</div>
+          <div class="brand-sub">123 Hospital Road, Chennai, Tamil Nadu 600001</div>
+          <div class="brand-sub">support@hospital.com | +91-44-1234-5678</div>
+        </div>
+      </div>
+      <div class="inv-meta">
+        <div class="inv-title">INVOICE</div>
+        <div class="inv-num">Invoice #@Model.BillId</div>
+        <div class="inv-date">Generated: @Model.GeneratedAt.ToString("dd MMMM yyyy")</div>
+        @if(Model.PaymentStatus == PaymentStatus.Paid){
+          <div><span class="status-paid">&#x2714; PAID — @(Model.PaidAt?.ToString("dd MMM yyyy"))</span></div>
+        } else {
+          <div><span class="status-pending">&#x23F3; PAYMENT PENDING</span></div>
+        }
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <h4>Patient Details</h4>
+        <div class="info-row"><span class="il">Patient ID</span><span class="iv">#@(Model.Patient?.PatientId)</span></div>
+        <div class="info-row"><span class="il">Name</span><span class="iv">@(Model.Patient?.FullName)</span></div>
+        <div class="info-row"><span class="il">Age / Gender</span><span class="iv">@(Model.Patient?.Age) yr / @(Model.Patient?.Gender)</span></div>
+        <div class="info-row"><span class="il">Contact</span><span class="iv">@(Model.Patient?.ContactNumber)</span></div>
+        <div class="info-row"><span class="il">Address</span><span class="iv">@(Model.Patient?.City ?? Model.Patient?.Address ?? "—")</span></div>
+        <div class="info-row"><span class="il">Doctor</span><span class="iv">@(Model.Patient?.AssignedDoctor?.FullName ?? "—")</span></div>
+      </div>
+      <div class="info-box">
+        <h4>Billing Details</h4>
+        <div class="info-row"><span class="il">Bill ID</span><span class="iv">#@Model.BillId</span></div>
+        <div class="info-row"><span class="il">Generated On</span><span class="iv">@Model.GeneratedAt.ToString("dd MMM yyyy")</span></div>
+        <div class="info-row"><span class="il">Billing Officer</span><span class="iv">@(Model.GeneratedByOfficer?.FullName ?? "—")</span></div>
+        @if(Model.PaymentStatus == PaymentStatus.Paid){
+        <div class="info-row"><span class="il">Payment Method</span><span class="iv">@(Model.PaymentMethod ?? "—")</span></div>
+        <div class="info-row"><span class="il">Paid On</span><span class="iv">@(Model.PaidAt?.ToString("dd MMM yyyy") ?? "—")</span></div>
+        }
+        <div class="info-row"><span class="il">Admission</span><span class="iv">@(Model.Patient?.AdmissionDate?.ToString("dd MMM yyyy") ?? "—")</span></div>
+        <div class="info-row"><span class="il">Discharge</span><span class="iv">@(Model.Patient?.DischargeDate?.ToString("dd MMM yyyy") ?? "—")</span></div>
+      </div>
+    </div>
+
+    @if((@ViewBag.LabOrders as List<LabOrder> ?? new()).Count > 0)
+    {
+    <div class="items-title">&#x1F9EA; Laboratory Tests</div>
+    <table class="items-table">
+      <thead><tr><th>Test Name</th><th>Ordered By</th><th>Status</th><th class="ta-right">Cost (Rs.)</th></tr></thead>
+      <tbody>
+      @foreach(var l in (List<LabOrder>)ViewBag.LabOrders){
+        <tr><td>@l.TestName</td><td>@(l.OrderedByDoctor?.FullName??"—")</td>
+        <td>@l.Status</td><td class="ta-right">@l.TestCost.ToString("N2")</td></tr>
+      }
+      </tbody>
+    </table>
+    }
+
+    @if((@ViewBag.Prescriptions as List<Prescription> ?? new()).Count > 0)
+    {
+    <div class="items-title">&#x1F48A; Medications</div>
+    <table class="items-table">
+      <thead><tr><th>Medicine</th><th>Dosage</th><th>Duration</th><th class="ta-right">Cost (Rs.)</th></tr></thead>
+      <tbody>
+      @foreach(var r in (List<Prescription>)ViewBag.Prescriptions){
+        <tr><td>@r.MedicineName</td><td>@r.Dosage</td><td>@r.Duration</td>
+        <td class="ta-right">@r.MedicineCost.ToString("N2")</td></tr>
+      }
+      </tbody>
+    </table>
+    }
+
+    @if((@ViewBag.Treatments as List<TreatmentPlan> ?? new()).Count > 0)
+    {
+    <div class="items-title">&#x1FA7A; Treatments &amp; Consultations</div>
+    <table class="items-table">
+      <thead><tr><th>Treatment</th><th>Doctor</th><th>Date</th><th class="ta-right">Fee (Rs.)</th></tr></thead>
+      <tbody>
+      @foreach(var t in (List<TreatmentPlan>)ViewBag.Treatments){
+        <tr><td>@t.TreatmentDescription</td><td>@(t.Doctor?.FullName??"—")</td>
+        <td>@t.TreatmentDate.ToString("dd MMM yyyy")</td>
+        <td class="ta-right">@t.ConsultationFee.ToString("N2")</td></tr>
+      }
+      </tbody>
+    </table>
+    }
+
+    <div style="display:flex;justify-content:flex-end">
+      <div class="bill-summary">
+        <div class="sum-row"><span>Registration Fee</span><span>Rs. @Model.RegistrationFee.ToString("N2")</span></div>
+        <div class="sum-row"><span>Consultation Fee</span><span>Rs. @Model.ConsultationFee.ToString("N2")</span></div>
+        <div class="sum-row"><span>Laboratory Fee</span><span>Rs. @Model.LabFee.ToString("N2")</span></div>
+        <div class="sum-row"><span>Medicine Fee</span><span>Rs. @Model.MedicineFee.ToString("N2")</span></div>
+        @if(Model.OtherCharges > 0){ <div class="sum-row"><span>Other Charges</span><span>Rs. @Model.OtherCharges.ToString("N2")</span></div> }
+        @if(Model.Discount > 0){ <div class="sum-row"><span>Discount</span><span>- Rs. @Model.Discount.ToString("N2")</span></div> }
+        <div class="sum-divider"></div>
+        <div class="sum-total"><span>Total Amount</span><span>Rs. @Model.TotalAmount.ToString("N2")</span></div>
+        @if(Model.PaymentStatus == PaymentStatus.Paid){
+        <div style="text-align:center;margin-top:10px;padding:8px;background:#dcfce7;border-radius:6px;color:#166534;font-weight:700;font-size:.85rem">
+          &#x2714; PAID via @(Model.PaymentMethod ?? "N/A")
+        </div>}
+      </div>
+    </div>
+
+    <div class="inv-footer">
+      <div class="footer-note">
+        <p>Thank you for choosing City General Hospital.</p>
+        <p style="margin-top:4px">This is a system-generated invoice. For queries: support@hospital.com</p>
+      </div>
+      <div class="footer-sig">
+        <div class="sig-line"></div>
+        <div class="sig-label">Authorized Signatory</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

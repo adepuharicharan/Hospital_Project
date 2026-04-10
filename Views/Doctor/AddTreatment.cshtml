@@ -1,0 +1,17 @@
+@model TreatmentCreateVM
+@{ ViewData["Title"] = "Add Treatment"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><a asp-action="PatientDetails" asp-route-id="@Model.PatientId">@Model.PatientName</a><i class="fas fa-chevron-right"></i><span>Treatment</span></div><h1 class="ph-title">Add Treatment Plan</h1></div></div>
+<div class="form-wrap"><div class="card"><div class="card-hdr"><i class="fas fa-stethoscope"></i> Treatment Plan — @Model.PatientName</div><div class="card-body">
+  <form asp-action="AddTreatment" method="post">@Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PatientId"/><input type="hidden" asp-for="PatientName"/>
+    <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+    <div class="form-grid">
+      <div class="fg col-span-2"><label class="fl">Treatment Description <span class="req">*</span></label><textarea asp-for="TreatmentDescription" class="fi ta" rows="3" placeholder="Describe the treatment plan"></textarea><span asp-validation-for="TreatmentDescription" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Instructions</label><textarea asp-for="Instructions" class="fi ta" rows="2" placeholder="Patient instructions"></textarea></div>
+      <div class="fg col-span-2"><label class="fl">Medications</label><input asp-for="Medications" class="fi" placeholder="List medications if any"/></div>
+      <div class="fg"><label class="fl">Follow-Up Date</label><input asp-for="FollowUpDate" type="date" class="fi"/></div>
+    </div>
+    <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Treatment</button><a asp-action="PatientDetails" asp-route-id="@Model.PatientId" class="btn btn-outline">Cancel</a></div>
+  </form>
+</div></div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

@@ -1,0 +1,19 @@
+@model EhrCreateVM
+@{ ViewData["Title"] = "Add EHR"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><a asp-action="PatientDetails" asp-route-id="@Model.PatientId">@Model.PatientName</a><i class="fas fa-chevron-right"></i><span>New EHR</span></div><h1 class="ph-title">Add EHR Record</h1></div></div>
+<div class="form-wrap"><div class="card"><div class="card-hdr"><i class="fas fa-file-medical"></i> Electronic Health Record — @Model.PatientName</div><div class="card-body">
+  <form asp-action="CreateEhr" method="post">@Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PatientId"/><input type="hidden" asp-for="PatientName"/>
+    <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+    <div class="form-grid">
+      <div class="fg col-span-2"><label class="fl">Chief Complaint <span class="req">*</span></label><input asp-for="ChiefComplaint" class="fi" placeholder="Primary complaint"/><span asp-validation-for="ChiefComplaint" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Symptoms <span class="req">*</span></label><textarea asp-for="Symptoms" class="fi ta" placeholder="Describe symptoms in detail" rows="3"></textarea><span asp-validation-for="Symptoms" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Diagnosis <span class="req">*</span></label><input asp-for="Diagnosis" class="fi" placeholder="Clinical diagnosis"/><span asp-validation-for="Diagnosis" class="ferr"></span></div>
+      <div class="fg col-span-2"><label class="fl">Clinical Notes</label><textarea asp-for="ClinicalNotes" class="fi ta" placeholder="Additional clinical observations" rows="3"></textarea></div>
+      <div class="fg col-span-2"><label class="fl">Treatment Advised</label><input asp-for="TreatmentAdvised" class="fi" placeholder="Recommended treatment"/></div>
+      <div class="fg"><label class="fl">Follow-Up Date</label><input asp-for="FollowUpDate" type="date" class="fi"/></div>
+    </div>
+    <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save EHR</button><a asp-action="PatientDetails" asp-route-id="@Model.PatientId" class="btn btn-outline">Cancel</a></div>
+  </form>
+</div></div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

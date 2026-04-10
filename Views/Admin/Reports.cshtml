@@ -1,0 +1,20 @@
+@{ ViewData["Title"] = "Reports"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><a asp-action="Dashboard">Dashboard</a><i class="fas fa-chevron-right"></i><span>Reports</span></div><h1 class="ph-title">Hospital Reports</h1><p class="ph-sub">@DateTime.Now.ToString("MMMM yyyy")</p></div></div>
+<div class="stats-row">
+  <div class="stat-card sc-blue"><div class="sc-icon"><i class="fas fa-procedures"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.TotalPatients</div><div class="sc-lbl">Total Patients</div></div></div>
+  <div class="stat-card sc-teal"><div class="sc-icon"><i class="fas fa-clipboard-list"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Registered</div><div class="sc-lbl">Registered</div></div></div>
+  <div class="stat-card sc-green"><div class="sc-icon"><i class="fas fa-bed"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Admitted</div><div class="sc-lbl">Admitted</div></div></div>
+  <div class="stat-card sc-purple"><div class="sc-icon"><i class="fas fa-sign-out-alt"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Discharged</div><div class="sc-lbl">Discharged</div></div></div>
+</div>
+<div class="grid-2">
+  <div class="card"><div class="card-hdr"><i class="fas fa-rupee-sign"></i> Revenue</div><div class="card-body">
+    <div class="rev-row rev-green"><div class="rr-lbl">Collected Revenue</div><div class="rr-val">&#x20b9;@(((decimal)ViewBag.Revenue).ToString("N0"))</div></div>
+    <div class="rev-row rev-amber"><div class="rr-lbl">Pending Revenue</div><div class="rr-val">&#x20b9;@(((decimal)ViewBag.PendingRevenue).ToString("N0"))</div></div>
+  </div></div>
+  <div class="card"><div class="card-hdr"><i class="fas fa-flask"></i> Lab &amp; Pharmacy</div><div class="card-body">
+    <div class="kv-row"><span>Total Lab Orders</span><strong>@ViewBag.LabOrders</strong></div>
+    <div class="kv-row"><span>Lab Completed</span><strong class="c-green">@ViewBag.LabCompleted</strong></div>
+    <div class="kv-row"><span>Total Prescriptions</span><strong>@ViewBag.Prescriptions</strong></div>
+    <div class="kv-row"><span>Dispensed</span><strong class="c-green">@ViewBag.PrescDispensed</strong></div>
+  </div></div>
+</div>

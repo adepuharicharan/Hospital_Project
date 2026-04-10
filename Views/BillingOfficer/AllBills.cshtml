@@ -1,0 +1,21 @@
+@model List<BillingRecord>
+@{ ViewData["Title"] = "All Bills"; }
+<div class="page-header"><div class="ph-left"><div class="breadcrumb"><span>Billing</span><i class="fas fa-chevron-right"></i><span>All Bills</span></div><h1 class="ph-title">All Bills</h1></div></div>
+<div class="card mb3"><div class="card-body"><form method="get" class="search-bar">
+  <div class="sb-input"><i class="fas fa-search"></i><input name="search" value="@ViewBag.Search" class="fi" placeholder="Search patient or bill ID…" style="width:280px"/></div>
+  <button type="submit" class="btn btn-primary btn-sm">Search</button>
+</form></div></div>
+<div class="card"><div class="table-wrap"><table class="dtable">
+  <thead><tr><th>Bill#</th><th>Patient</th><th>Reg Fee</th><th>Lab</th><th>Medicine</th><th>Consult</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var b in Model){<tr>
+    <td class="tid">#@b.BillId</td><td class="fw6">@(b.Patient?.FullName??"—")</td>
+    <td>&#x20b9;@b.RegistrationFee.ToString("N0")</td><td>&#x20b9;@b.LabFee.ToString("N0")</td>
+    <td>&#x20b9;@b.MedicineFee.ToString("N0")</td><td>&#x20b9;@b.ConsultationFee.ToString("N0")</td>
+    <td class="fw6">&#x20b9;@b.TotalAmount.ToString("N0")</td>
+    <td>@if(b.PaymentStatus==PaymentStatus.Paid){<span class="badge b-active">Paid</span>}else{<span class="badge b-registered">Pending</span>}</td>
+    <td><a asp-action="Invoice" asp-route-billId="@b.BillId" class="btn btn-sm btn-outline" target="_blank"><i class="fas fa-print"></i> Invoice</a></td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-file-invoice"></i><p>No bills found.</p></div>}
+</div></div>

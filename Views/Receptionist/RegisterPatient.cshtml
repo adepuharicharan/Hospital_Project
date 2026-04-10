@@ -1,0 +1,39 @@
+@model PatientRegisterVM
+@{ ViewData["Title"] = "Register Patient"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="PatientList">Patients</a><i class="fas fa-chevron-right"></i><span>Register</span></div><h1 class="ph-title">Register New Patient</h1></div>
+</div>
+<div class="form-wrap"><div class="card">
+  <div class="card-hdr"><i class="fas fa-user-plus"></i> Patient Information</div>
+  <div class="card-body">
+    <form asp-action="RegisterPatient" method="post">@Html.AntiForgeryToken()
+      <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+      <div class="section-title">Personal Details</div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Full Name<span class="req">*</span></label><input asp-for="FullName" class="fi" placeholder="Patient full name"/><span asp-validation-for="FullName" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Date of Birth<span class="req">*</span></label><input asp-for="DateOfBirth" type="date" class="fi"/><span asp-validation-for="DateOfBirth" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Gender<span class="req">*</span></label><select asp-for="Gender" class="fi"><option value="">— Select —</option>@foreach(var g in Enum.GetValues<Gender>()){<option value="@g">@g</option>}</select><span asp-validation-for="Gender" class="ferr"></span></div>
+         <div class="fg"><label class="fl">Blood Group</label><select asp-for="BloodGroup" class="fi">@foreach(var b in Enum.GetValues<BloodGroup>()){<option value="@b">@b</option>}</select></div> 
+                
+        <div class="fg"><label class="fl">Contact Number<span class="req">*</span></label><input asp-for="ContactNumber" class="fi" placeholder="10-digit number"/><span asp-validation-for="ContactNumber" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Email</label><input asp-for="Email" class="fi" placeholder="Optional"/></div>
+        <div class="fg col-span-2"><label class="fl">Address<span class="req">*</span></label><input asp-for="Address" class="fi" placeholder="Full address"/><span asp-validation-for="Address" class="ferr"></span></div>
+        <div class="fg"><label class="fl">City</label><input asp-for="City" class="fi" placeholder="City"/></div>
+        <div class="fg"><label class="fl">Known Allergies</label><input asp-for="KnownAllergies" class="fi" placeholder="e.g. Penicillin"/></div>
+      </div>
+      <div class="section-title mt2">Emergency &amp; Medical</div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Emergency Contact Name</label><input asp-for="EmergencyContactName" class="fi"/></div>
+        <div class="fg"><label class="fl">Emergency Contact No.</label><input asp-for="EmergencyContactNumber" class="fi" placeholder="10 digits"/></div>
+        <div class="fg"><label class="fl">Assign Doctor<span class="req">*</span></label>
+          <select asp-for="AssignedDoctorId" class="fi"><option value="">— Select Doctor —</option>
+          @foreach(var d in Model.AvailableDoctors){<option value="@d.UserId">@d.Display</option>}</select>
+          <span asp-validation-for="AssignedDoctorId" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Registration Fee (Rs.)</label><input asp-for="RegistrationFee" type="number" class="fi"/></div>
+        <div class="fg col-span-2"><label class="fl">Chief Complaint</label><input asp-for="ChiefComplaint" class="fi" placeholder="Primary reason for visit"/></div>
+      </div>
+      <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Register Patient</button><a asp-action="PatientList" class="btn btn-outline">Cancel</a></div>
+    </form>
+  </div>
+</div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

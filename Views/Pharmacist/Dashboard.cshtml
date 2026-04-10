@@ -1,0 +1,21 @@
+@model List<Prescription>
+@{ ViewData["Title"] = "Pharmacy Dashboard"; }
+<div class="page-header"><div class="ph-left"><h1 class="ph-title">Pharmacy Dashboard</h1><p class="ph-sub">Pending prescriptions to dispense</p></div></div>
+<div class="stats-row">
+  <div class="stat-card sc-blue"><div class="sc-icon"><i class="fas fa-prescription-bottle"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Total</div><div class="sc-lbl">Total Rx</div></div></div>
+  <div class="stat-card sc-red"><div class="sc-icon"><i class="fas fa-clock"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Pending</div><div class="sc-lbl">Pending</div></div></div>
+  <div class="stat-card sc-green"><div class="sc-icon"><i class="fas fa-check-circle"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.Dispensed</div><div class="sc-lbl">Dispensed</div></div></div>
+</div>
+<div class="card"><div class="card-hdr"><i class="fas fa-pills"></i> Pending Prescriptions <a asp-action="AllPrescriptions" class="btn btn-sm btn-outline ml-auto">View All</a></div>
+<div class="table-wrap"><table class="dtable">
+  <thead><tr><th>ID</th><th>Patient</th><th>Medicine</th><th>Dosage</th><th>Duration</th><th>Doctor</th><th>Prescribed</th><th>Action</th></tr></thead>
+  <tbody>
+  @foreach(var r in Model){<tr>
+    <td class="tid">#@r.PrescriptionId</td><td class="fw6">@(r.Patient?.FullName??"—")</td><td>@r.MedicineName</td>
+    <td class="tsm">@r.Dosage</td><td class="tsm">@r.Duration</td><td class="tsm">@(r.PrescribedByDoctor?.FullName??"—")</td>
+    <td class="tsm tm">@r.PrescribedAt.ToString("dd MMM")</td>
+    <td><a asp-action="Dispense" asp-route-id="@r.PrescriptionId" class="btn btn-sm btn-primary">Dispense</a></td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-check-circle"></i><p>All prescriptions dispensed.</p></div>}
+</div></div>

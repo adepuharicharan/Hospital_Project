@@ -1,0 +1,27 @@
+@model CreateUserVM
+@{ ViewData["Title"] = "Create User"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="Users">Users</a><i class="fas fa-chevron-right"></i><span>Create</span></div><h1 class="ph-title">Create New User</h1></div>
+</div>
+<div class="form-wrap"><div class="card">
+  <div class="card-hdr"><i class="fas fa-user-plus"></i> User Details</div>
+  <div class="card-body">
+    <form asp-action="CreateUser" method="post">@Html.AntiForgeryToken()
+      <div asp-validation-summary="ModelOnly" class="v-errors"></div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">Full Name<span class="req">*</span></label><input asp-for="FullName" class="fi" placeholder="Dr. John Smith"/><span asp-validation-for="FullName" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Email<span class="req">*</span></label><input asp-for="Email" class="fi" placeholder="user@hospital.com"/><span asp-validation-for="Email" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Password<span class="req">*</span></label><input asp-for="Password" class="fi" placeholder="Min 8 chars"/><span asp-validation-for="Password" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Confirm Password<span class="req">*</span></label><input asp-for="ConfirmPassword" class="fi" placeholder="Repeat password"/><span asp-validation-for="ConfirmPassword" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Role<span class="req">*</span></label>
+          <select asp-for="Role" class="fi"><option value="">— Select Role —</option>
+          @foreach(var r in Enum.GetValues<HospitalEHR.Models.UserRole>()){<option value="@r">@r</option>}</select>
+          <span asp-validation-for="Role" class="ferr"></span></div>
+        <div class="fg"><label class="fl">Employee ID</label><input asp-for="EmployeeId" class="fi" placeholder="EMP001"/></div>
+        <div class="fg col-span-2"><label class="fl">Specialization (Doctors only)</label><input asp-for="Specialization" class="fi" placeholder="e.g. Cardiology"/></div>
+      </div>
+      <div class="btn-row mt2"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Create User</button><a asp-action="Users" class="btn btn-outline">Cancel</a></div>
+    </form>
+  </div>
+</div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }

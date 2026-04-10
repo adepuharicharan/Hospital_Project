@@ -1,0 +1,37 @@
+@model Patient
+@{ ViewData["Title"] = "Patient Details"; }
+<div class="page-header">
+  <div class="ph-left"><div class="breadcrumb"><a asp-action="PatientList">Patients</a><i class="fas fa-chevron-right"></i><span>#@Model.PatientId</span></div><h1 class="ph-title">@Model.FullName</h1></div>
+  <div class="btn-row">
+    <a asp-action="EditPatient" asp-route-id="@Model.PatientId" class="btn btn-outline"><i class="fas fa-edit"></i> Edit</a>
+    @if(Model.AdmissionStatus == AdmissionStatus.Registered){
+    <form asp-action="AdmitPatient" method="post" style="display:inline">@Html.AntiForgeryToken()
+      <input type="hidden" name="patientId" value="@Model.PatientId"/>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-bed"></i> Admit Patient</button>
+    </form>
+    }
+  </div>
+</div>
+<div class="grid-2">
+  <div class="card"><div class="card-hdr"><i class="fas fa-user"></i> Personal Information</div><div class="card-body">
+    <div class="kv-row"><span>Patient ID</span><strong>#@Model.PatientId</strong></div>
+    <div class="kv-row"><span>Date of Birth</span><strong>@Model.DateOfBirth.ToString("dd MMM yyyy") (@Model.Age years)</strong></div>
+    <div class="kv-row"><span>Gender</span><strong>@Model.Gender</strong></div>
+    <div class="kv-row"><span>Blood Group</span><strong>@Model.BloodGroup</strong></div>
+    <div class="kv-row"><span>Contact</span><strong>@Model.ContactNumber</strong></div>
+    <div class="kv-row"><span>Email</span><strong>@(Model.Email??"—")</strong></div>
+    <div class="kv-row"><span>Address</span><strong>@Model.Address@(Model.City!=null?", "+Model.City:"")</strong></div>
+    <div class="kv-row"><span>Allergies</span><strong>@(Model.KnownAllergies??"None")</strong></div>
+  </div></div>
+  <div class="card"><div class="card-hdr"><i class="fas fa-hospital"></i> Admission Details</div><div class="card-body">
+    <div class="kv-row"><span>Status</span><strong>@if(Model.AdmissionStatus==AdmissionStatus.Admitted){<span class="badge b-admitted">Admitted</span>}else if(Model.AdmissionStatus==AdmissionStatus.Discharged){<span class="badge b-discharged">Discharged</span>}else{<span class="badge b-registered">Registered</span>}</strong></div>
+    <div class="kv-row"><span>Registered</span><strong>@Model.RegistrationDate.ToString("dd MMM yyyy HH:mm")</strong></div>
+    <div class="kv-row"><span>Admitted</span><strong>@(Model.AdmissionDate?.ToString("dd MMM yyyy")??"—")</strong></div>
+    <div class="kv-row"><span>Discharged</span><strong>@(Model.DischargeDate?.ToString("dd MMM yyyy")??"—")</strong></div>
+    <div class="kv-row"><span>Ward/Room</span><strong>@(Model.WardRoom??"—")</strong></div>
+    <div class="kv-row"><span>Assigned Doctor</span><strong>@(Model.AssignedDoctor?.FullName??"—")</strong></div>
+    <div class="kv-row"><span>Chief Complaint</span><strong>@(Model.ChiefComplaint??"—")</strong></div>
+    <div class="kv-row"><span>Registration Fee</span><strong>&#x20b9;@Model.RegistrationFee.ToString("N0")</strong></div>
+    <div class="kv-row"><span>Emergency Contact</span><strong>@(Model.EmergencyContactName??"—") @(Model.EmergencyContactNumber!=null?" / "+Model.EmergencyContactNumber:"")</strong></div>
+  </div></div>
+</div>

@@ -1,0 +1,33 @@
+@model List<BillingRecord>
+@{ ViewData["Title"] = "Billing Dashboard"; }
+<div class="page-header"><div class="ph-left"><h1 class="ph-title">Billing Dashboard</h1><p class="ph-sub">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</p></div></div>
+<div class="stats-row">
+  <div class="stat-card sc-blue"><div class="sc-icon"><i class="fas fa-file-invoice"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.TotalBills</div><div class="sc-lbl">Total Bills</div></div></div>
+  <div class="stat-card sc-red"><div class="sc-icon"><i class="fas fa-clock"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.PendingPayments</div><div class="sc-lbl">Pending</div></div></div>
+  <div class="stat-card sc-green"><div class="sc-icon"><i class="fas fa-check-circle"></i></div><div class="sc-info"><div class="sc-val">@ViewBag.PaidBills</div><div class="sc-lbl">Paid</div></div></div>
+  <div class="stat-card sc-gold"><div class="sc-icon"><i class="fas fa-rupee-sign"></i></div><div class="sc-info"><div class="sc-val">&#x20b9;@(((decimal)ViewBag.TotalRevenue).ToString("N0"))</div><div class="sc-lbl">Revenue</div></div></div>
+</div>
+<div class="card"><div class="card-hdr"><i class="fas fa-file-invoice-dollar"></i> Recent Bills <a asp-action="AllBills" class="btn btn-sm btn-outline ml-auto">View All</a></div>
+<div class="table-wrap"><table class="dtable">
+  <thead><tr><th>Bill#</th><th>Patient</th><th>Total</th><th>Status</th><th>Generated</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var b in Model){<tr>
+    <td class="tid">#@b.BillId</td><td class="fw6">@(b.Patient?.FullName??"—")</td>
+    <td class="fw6">&#x20b9;@b.TotalAmount.ToString("N0")</td>
+    <td>@if(b.PaymentStatus==PaymentStatus.Paid){<span class="badge b-active">Paid</span>}else{<span class="badge b-registered">Pending</span>}</td>
+    <td class="tsm tm">@b.GeneratedAt.ToString("dd MMM yyyy")</td>
+    <td class="btn-row">
+      <a asp-action="Invoice" asp-route-billId="@b.BillId" class="btn btn-sm btn-outline" target="_blank"><i class="fas fa-print"></i> Invoice</a>
+      @if(b.PaymentStatus==PaymentStatus.Pending){
+      <form asp-action="ProcessPayment" method="post" style="display:inline">@Html.AntiForgeryToken()
+        <input type="hidden" name="billId" value="@b.BillId"/>
+        <select name="paymentMethod" class="fi" style="width:120px;display:inline;height:32px;font-size:.8rem">
+          <option value="">Method</option><option>Cash</option><option>Card</option><option>UPI</option><option>Insurance</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-primary">Pay</button>
+      </form>}
+    </td>
+  </tr>}
+  </tbody>
+</table>@if(!Model.Any()){<div class="empty-state"><i class="fas fa-file-invoice"></i><p>No bills yet.</p></div>}
+</div></div>
