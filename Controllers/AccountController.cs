@@ -49,7 +49,7 @@ namespace HospitalEHR.Controllers
             HttpContext.Session.SetString(SessionKeys.Email,    user.Email);
             HttpContext.Session.SetString(SessionKeys.Role,     user.Role.ToString());
 
-            user.LastLoginAt = DateTime.Now;
+            user.LastLoginAt = DateTime.UtcNow;
             await _us.UpdateAsync(user);
             _log.LogInformation("User {Email} ({Role}) logged in", user.Email, user.Role);
 
