@@ -33,6 +33,9 @@ namespace HospitalEHR.Controllers
             ViewBag.Search = search;
             return View(patients);
         }
+        public string Normal(){
+            return "Git-Practice";
+        }
 
         public async Task<IActionResult> MyPatients(string? search)
         {
